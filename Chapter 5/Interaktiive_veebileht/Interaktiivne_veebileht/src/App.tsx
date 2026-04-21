@@ -1,190 +1,92 @@
+// Impordime Reacti hook'i useState, mis võimaldab komponendil meeles hoida väärtusi
 import { useState } from "react";
-import "./App.css";
 
 export default function App() {
-  // -------------------------
-  // 1. Kalkulaator
-  // -------------------------
-  const [num1, setNum1] = useState<number | "">("");
-  const [num2, setNum2] = useState<number | "">("");
-  const [operation, setOperation] = useState("add");
-  const [calcResult, setCalcResult] = useState<string>("");
+  // 'a' on esimese kalkulaatori sisestusvälja väärtus
+  // 'setA' on funktsioon, mis muudab 'a' väärtust
+  const [a, setA] = useState("");
 
-  const calculate = () => {
-    if (num1 === "" || num2 === "") {
-      setCalcResult("Palun sisesta mõlemad arvud.");
-      return;
-    }
+  // 'b' on teise kalkulaatori sisestusvälja väärtus
+  // 'setB' muudab 'b' väärtust
+  const [b, setB] = useState("");
 
-    let result: number;
+  // 'task' hoiab ühe uue to-do ülesande teksti
+  // 'setTask' uuendab seda
+  const [task, setTask] = useState("");
 
-    switch (operation) {
-      case "add":
-        result = Number(num1) + Number(num2);
-        break;
-      case "sub":
-        result = Number(num1) - Number(num2);
-        break;
-      case "mul":
-        result = Number(num1) * Number(num2);
-        break;
-      case "div":
-        if (Number(num2) === 0) {
-          setCalcResult("Nulliga jagamine pole lubatud.");
-          return;
-        }
-        result = Number(num1) / Number(num2);
-        break;
-      default:
-        result = 0;
-    }
+  // 'list' on to-do list ehk massiiv kõigist ülesannetest
+  // 'setList' võimaldab listi muuta
+  const [list, setList] = useState<string[]>([]);
 
-    setCalcResult("Tulemus: " + result);
-  };
-
-  // -------------------------
-  // 2. Mini-viktoriin
-  // -------------------------
-  const quizQuestions = [
-    {
-      question: "Mis keeles on see leht kirjutatud?",
-      correct: "HTML, CSS ja JavaScript",
-      options: ["C++", "HTML, CSS ja JavaScript", "Python"],
-    },
-    {
-      question: "Milline sündmus käivitub nupule vajutamisel?",
-      correct: "onclick",
-      options: ["oninput", "onclick", "onsubmit"],
-    },
-    {
-      question: "Mida teeb CSS?",
-      correct: "Määrab kujunduse ja stiili",
-      options: ["Määrab kujunduse ja stiili", "Käivitab serveri", "Salvestab andmebaasi"],
-    },
-  ];
-
-  const [quizAnswers, setQuizAnswers] = useState<(string | "")[]>(
-    Array(quizQuestions.length).fill("")
-  );
-  const [score, setScore] = useState("");
-
-  const checkQuiz = () => {
-    let correctCount = 0;
-    quizAnswers.forEach((ans, i) => {
-      if (ans === quizQuestions[i].correct) correctCount++;
-    });
-    setScore(`Sinu skoor: ${correctCount} / ${quizQuestions.length}`);
-  };
-
-  // -------------------------
-  // 3. To-do list
-  // -------------------------
-  const [todoInput, setTodoInput] = useState("");
-  const [todos, setTodos] = useState<string[]>([]);
-
-  const addTodo = () => {
-    if (!todoInput.trim()) return;
-    setTodos([...todos, todoInput]);
-    setTodoInput("");
-  };
-
-  const deleteTodo = (index: number) => {
-    setTodos(todos.filter((_, i) => i !== index));
-  };
-
-  // -------------------------
-  // JSX
-  // -------------------------
+  // JSX — see on see, mis ekraanile kuvatakse
   return (
-    <div>
-      <h1>Interaktiivne veebileht</h1>
+    // Lihtne konteiner, millele on lisatud natuke stiili
+    <div style={{ padding: 20, fontFamily: "Arial" }}>
+      <h1>Interaktiivne leht</h1>
 
-      {/* Kalkulaator */}
-      <section>
-        <h2>Kalkulaator</h2>
+      {/* --- KALKULAATOR --- */}
+      <h2>Kalkulaator</h2>
 
-        <input
-          type="number"
-          value={num1}
-          onChange={(e) => setNum1(e.target.value === "" ? "" : Number(e.target.value))}
-          placeholder="Esimene arv"
-        />
+      {/* Esimene number-input.
+          value={a} tähendab, et sisestusvälja väärtus tuleb muutujast 'a'.
+          onChange käivitub iga kord, kui kasutaja midagi kirjutab.
+          setA uuendab 'a' väärtust. */}
+      <input
+        type="number"
+        value={a}
+        onChange={(e) => setA(e.target.value)}
+      />
 
-        <input
-          type="number"
-          value={num2}
-          onChange={(e) => setNum2(e.target.value === "" ? "" : Number(e.target.value))}
-          placeholder="Teine arv"
-        />
+      {/* Teine number-input.
+          Sama loogika nagu esimesel, ainult et see muudab 'b' väärtust. */}
+      <input
+        type="number"
+        value={b}
+        onChange={(e) => setB(e.target.value)}
+        style={{ marginLeft: 10 }} // Lisab väikese vahe vasakule
+      />
 
-        <select value={operation} onChange={(e) => setOperation(e.target.value)}>
-          <option value="add">Liitmine (+)</option>
-          <option value="sub">Lahutamine (-)</option>
-          <option value="mul">Korrutamine (*)</option>
-          <option value="div">Jagamine (/)</option>
-        </select>
+      {/* Tulemus arvutatakse otse JSX-is.
+          Number(a) + Number(b) liidab kaks sisestatud arvu kokku. */}
+      <p>Tulemus: {Number(a) + Number(b)}</p>
 
-        <button onClick={calculate}>Arvuta</button>
+      {/* --- TO-DO LIST --- */}
+      <h2>To-do list</h2>
 
-        <p><strong>{calcResult}</strong></p>
-      </section>
+      {/* Sisestusväli uue ülesande jaoks.
+          'task' hoiab sisestatud teksti.
+          onChange uuendab 'task' väärtust iga klahvivajutusega. */}
+      <input
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
+      />
 
-      {/* Viktoriin */}
-      <section>
-        <h2>Mini-viktoriin</h2>
+      {/* Nupp, mis lisab uue ülesande listi.
+          Kui tekst pole tühi, lisatakse see listi ja sisestusväli tühjendatakse. */}
+      <button
+        onClick={() => {
+          // Kontroll: kas tekst pole tühi
+          if (task.trim()) {
+            // Loome uue listi, lisades lõppu uue ülesande
+            setList([...list, task]);
 
-        {quizQuestions.map((q, i) => (
-          <div key={i} style={{ marginBottom: "12px" }}>
-            <p>{i + 1}. {q.question}</p>
+            // Tühjendame sisestusvälja
+            setTask("");
+          }
+        }}
+        style={{ marginLeft: 10 }} // Vahe sisestusväljast
+      >
+        Lisa
+      </button>
 
-            <select
-              value={quizAnswers[i]}
-              onChange={(e) => {
-                const newAnswers = [...quizAnswers];
-                newAnswers[i] = e.target.value;
-                setQuizAnswers(newAnswers);
-              }}
-            >
-              <option value="">Vali vastus...</option>
-              {q.options.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
-
-            {quizAnswers[i] && (
-              <p className={quizAnswers[i] === q.correct ? "correct" : "incorrect"}>
-                {quizAnswers[i] === q.correct ? "Õige!" : "Vale vastus."}
-              </p>
-            )}
-          </div>
+      {/* Kuvame kõik ülesanded <ul> sees.
+          list.map() käib läbi kõik elemendid ja loob igaühe jaoks <li>.
+          'key' on Reacti nõue, et igal elemendil oleks unikaalne võti. */}
+      <ul>
+        {list.map((t, i) => (
+          <li key={i}>{t}</li>
         ))}
-
-        <button onClick={checkQuiz}>Kontrolli vastuseid</button>
-        <p><strong>{score}</strong></p>
-      </section>
-
-      {/* To-do list */}
-      <section>
-        <h2>To‑do list</h2>
-
-        <input
-          type="text"
-          value={todoInput}
-          onChange={(e) => setTodoInput(e.target.value)}
-          placeholder="Lisa ülesanne..."
-        />
-
-        <button onClick={addTodo}>Lisa</button>
-
-        <div style={{ marginTop: "10px" }}>
-          {todos.map((task, i) => (
-            <div key={i} className="todo-item">
-              <span>{task}</span>
-              <button onClick={() => deleteTodo(i)}>Kustuta</button>
-            </div>
-          ))}
-        </div>
-      </section>
+      </ul>
     </div>
   );
 }
